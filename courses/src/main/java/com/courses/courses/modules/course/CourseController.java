@@ -1,6 +1,6 @@
-package com.courses.courses.modules.category;
+package com.courses.courses.modules.course;
 
-import com.courses.courses.modules.category.exceptions.CategoryAlreadyExistsException;
+import com.courses.courses.modules.course.exceptions.CourseAlreadyExistsException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,18 +14,18 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/categories")
-public class CategoryController {
+@RequestMapping("/courses")
+public class CourseController {
 
     @Autowired
-    private CategoryService categoryService;
+    private CourseService courseService;
 
     @PostMapping("/")
-    public ResponseEntity<Object> createCategory(@Valid @RequestBody CategoryEntity categoryBody) {
+    public ResponseEntity<Object> createCourse(@Valid @RequestBody CourseEntity newCourse) {
         try {
-            var result = this.categoryService.createCategory(categoryBody);
+            var result = this.courseService.createCourse(newCourse);
             return ResponseEntity.ok().body(result);
-        } catch (CategoryAlreadyExistsException e) {
+        } catch (CourseAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -33,9 +33,8 @@ public class CategoryController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<CategoryEntity>> findAll() {
-        var result = this.categoryService.findAll();
-        
+    public ResponseEntity<List<CourseEntity>> findAllCourses() {
+        var result = this.courseService.findAll();
         return ResponseEntity.ok().body(result);
     }
 }
