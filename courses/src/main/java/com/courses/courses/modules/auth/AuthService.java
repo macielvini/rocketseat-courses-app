@@ -11,6 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.naming.AuthenticationException;
+import java.time.Duration;
+import java.time.Instant;
 
 @Service
 public class AuthService {
@@ -36,6 +38,11 @@ public class AuthService {
         }
 
         Algorithm algorithm = Algorithm.HMAC256(secret);
-        return JWT.create().withSubject(user.getId().toString()).withIssuer("Rocket Courses").sign(algorithm);
+        return JWT
+                .create()
+                .withSubject(user.getId().toString())
+                .withIssuer("Rocket Courses")
+                .withExpiresAt(Instant.now().plus(Duration.ofHours(24)))
+                .sign(algorithm);
     }
 }
