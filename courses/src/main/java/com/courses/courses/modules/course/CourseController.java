@@ -1,6 +1,8 @@
 package com.courses.courses.modules.course;
 
+import com.courses.courses.modules.course.dto.CreateCourseDto;
 import com.courses.courses.modules.course.exceptions.CourseAlreadyExistsException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/courses")
@@ -21,9 +24,17 @@ public class CourseController {
     private CourseService courseService;
 
     @PostMapping("/")
-    public ResponseEntity<Object> createCourse(@Valid @RequestBody CourseEntity newCourse) {
+    public ResponseEntity<Object> createCourse(@Valid @RequestBody CreateCourseDto courseDto, HttpServletRequest http) {
         try {
-            var result = this.courseService.createCourse(newCourse);
+            var userId = http.getAttribute("userId");
+
+            var courseEntity = CourseEntity.builder()
+                    .categoryId(courseDto.getCategoryId())
+                    .userId(UUID.fromString(userId.toString()))
+                    .name(courseDto.getName())
+                    .build();
+
+            var result = this.courseService.createCourse(courseEntity);
             return ResponseEntity.ok().body(result);
         } catch (CourseAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
