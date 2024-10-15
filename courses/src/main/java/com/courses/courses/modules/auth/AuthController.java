@@ -1,6 +1,7 @@
 package com.courses.courses.modules.auth;
 
 import com.courses.courses.modules.auth.dto.LoginDto;
+import com.courses.courses.modules.auth.dto.LoginResponseDto;
 import com.courses.courses.modules.auth.exceptions.UserNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody @Valid LoginDto loginDto) {
-        String result = null;
+        LoginResponseDto result = null;
         try {
             result = this.authService.login(loginDto);
             return ResponseEntity.ok().body(result);

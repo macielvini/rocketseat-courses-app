@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +25,7 @@ public class CourseController {
     private CourseService courseService;
 
     @PostMapping("/")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Object> createCourse(@Valid @RequestBody CreateCourseDto courseDto, HttpServletRequest http) {
         try {
             var userId = http.getAttribute("userId");
@@ -44,8 +46,15 @@ public class CourseController {
     }
 
     @GetMapping("/")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<List<CourseEntity>> findAllCourses() {
         var result = this.courseService.findAll();
         return ResponseEntity.ok().body(result);
+    }
+
+    @GetMapping("/admin")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String adminTest() {
+        return "You have admin permissions!";
     }
 }
