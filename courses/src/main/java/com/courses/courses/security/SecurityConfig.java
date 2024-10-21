@@ -17,13 +17,16 @@ public class SecurityConfig {
     @Autowired
     private SecurityFilter securityFilter;
 
+    private static final String[] SWAGGER = {"/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**"};
+
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> {
                     auth
                             .requestMatchers("/users/").permitAll()
-                            .requestMatchers("/auth/*").permitAll();
+                            .requestMatchers("/auth/*").permitAll()
+                            .requestMatchers(SWAGGER).permitAll();
 
                     auth.anyRequest().authenticated();
                 }).addFilterBefore(securityFilter, BasicAuthenticationFilter.class);
