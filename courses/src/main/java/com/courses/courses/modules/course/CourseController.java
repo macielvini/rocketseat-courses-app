@@ -2,6 +2,13 @@ package com.courses.courses.modules.course;
 
 import com.courses.courses.modules.course.dto.CreateCourseDto;
 import com.courses.courses.modules.course.exceptions.CourseAlreadyExistsException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +26,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/courses")
+@Tag(name = "Course")
 public class CourseController {
 
     @Autowired
@@ -26,6 +34,13 @@ public class CourseController {
 
     @PostMapping("/")
     @PreAuthorize("hasRole('USER')")
+    @SecurityRequirement(name = "jwt_auth")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {
+                    @Content(schema = @Schema(implementation = CourseEntity.class))
+            })
+    })
+    @Operation(summary = "Create a course")
     public ResponseEntity<Object> createCourse(@Valid @RequestBody CreateCourseDto courseDto, HttpServletRequest http) {
         try {
             var userId = http.getAttribute("userId");
@@ -47,6 +62,8 @@ public class CourseController {
 
     @GetMapping("/")
     @PreAuthorize("hasRole('USER')")
+    @SecurityRequirement(name = "jwt_auth")
+    @Operation(summary = "List all courses")
     public ResponseEntity<List<CourseEntity>> findAllCourses() {
         var result = this.courseService.findAll();
         return ResponseEntity.ok().body(result);
@@ -54,6 +71,16 @@ public class CourseController {
 
     @GetMapping("/admin")
     @PreAuthorize("hasRole('ADMIN')")
+    @SecurityRequirement(name = "jwt_auth")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {
+                    @Content(schema = @Schema(example = "You have admin permissions!"))
+            }),
+            @ApiResponse(responseCode = "403", content = {
+                    @Content(schema = @Schema(example = "{}", description = "You DO NOT have admin permissions!"))
+            }),
+    })
+    @Operation(summary = "Just to check if user has ADMIN role permissions")
     public String adminTest() {
         return "You have admin permissions!";
     }
